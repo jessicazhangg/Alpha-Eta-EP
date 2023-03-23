@@ -179,13 +179,13 @@ void serialBoard() {
 void AI_HvsH() {
   // Take move from human
   inputString += mov;
-  if (sequence == 3) {
+  if (sequence == 3) {  //a move(input) has length 4 
     Serial.print(mn);
     Serial.print(". ");
   }
   else if (sequence == 4) Serial.print("   ");
 
-  Serial.print(inputString.substring(0, 4));
+  Serial.print(inputString.substring(0, 4)); 
   c[0] = inputString.charAt(0);
   c[1] = inputString.charAt(1);
   c[2] = inputString.charAt(2);

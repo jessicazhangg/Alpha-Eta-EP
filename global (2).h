@@ -1,9 +1,10 @@
 //  Chessboard
+#include <FastLED.h>
 int reed_sensor_status [8][8];
 int reed_sensor_record [8][8];
 int reed_sensor_status_memory [8][8];
-const float TROLLEY_START_POSITION_X = 0.78;
-const float TROLLEY_START_POSITION_Y = 4.65;
+const float TROLLEY_START_POSITION_X = 0.78; //dont worry about this 
+const float TROLLEY_START_POSITION_Y = 4.65; //dont worry about this 
 byte trolley_coordinate_X = 5;
 byte trolley_coordinate_Y = 7;
 char mov [4] = {0, 0, 0, 0};
@@ -33,6 +34,11 @@ unsigned long timer = 0;
 boolean start_black = true;
 boolean new_turn_countdown = false;
 
+
+// LED
+CRGB led_state [150];
+
+
 //  Motor
 const byte MOTOR_WHITE_DIR (2);
 const byte MOTOR_WHITE_STEP (3);
@@ -43,10 +49,10 @@ const int SPEED_SLOW (3000);
 const int SPEED_FAST (1000);
 
 //  Multiplexer
-const byte MUX_ADDR [4] = {A3, A2, A1, A0};
-const byte MUX_SELECT [4] = {13, 9, 8, 7};
-const byte MUX_OUTPUT (12);
-const byte MUX_CHANNEL[16][4] = {
+const byte MUX_ADDR [4] = {A3, A2, A1, A0}; //Pin number
+const byte MUX_SELECT [4] = {13, 9, 8, 7}; //chooses multiplexer and enables it. each of these connected to each MUX
+const byte MUX_OUTPUT (12); //?? 
+const byte MUX_CHANNEL[16][4] = {     //channel
   {0, 0, 0, 0},
   {1, 0, 0, 0},
   {0, 1, 0, 0},
