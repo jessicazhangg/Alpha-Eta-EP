@@ -147,6 +147,7 @@ C: if (m > I - M | m < M - I)d = 98;           /* mate holds to any depth  */
 
 //************************************  GAME OVER
 void gameOver() {
+  game_over = true;
   for (;;);
 }
 
@@ -179,13 +180,13 @@ void serialBoard() {
 void AI_HvsH() {
   // Take move from human
   inputString += mov;
-  if (sequence == 3) {  //a move(input) has length 4 
+  if (sequence == 3) {
     Serial.print(mn);
     Serial.print(". ");
   }
   else if (sequence == 4) Serial.print("   ");
 
-  Serial.print(inputString.substring(0, 4)); 
+  Serial.print(inputString.substring(0, 4));
   c[0] = inputString.charAt(0);
   c[1] = inputString.charAt(1);
   c[2] = inputString.charAt(2);
@@ -258,10 +259,12 @@ void AI_HvsC() {
   r = D(-I, I, Q, O, 1, 3);                 /* Check & do the human movement */
   if ( !(r > -I + 1) ) {
     Serial.println("Lose ");
+    white_win = true; // joosy added
     gameOver();
   }
   if (k == 0x10) {                          /* The flag turn must change to 0x08 */
     Serial.println("No valid move");
+    no_valid_move = true; // joosy added
     return;
   }
 
@@ -275,6 +278,7 @@ void AI_HvsC() {
   r = D(-I, I, Q, O, 1, 3);                 /* Think & do*/
   if ( !(r > -I + 1) ) {
     Serial.println("Lose*");
+    white_win = true; // joosy added
     gameOver();
   }
 
@@ -282,6 +286,7 @@ void AI_HvsC() {
   r = D(-I, I, Q, O, 1, 3);
   if ( !(r > -I + 1) ) {
     Serial.println(lastM);
+    white_win = false; // joosy added
     gameOver();
   }
   Serial.println(lastM);
