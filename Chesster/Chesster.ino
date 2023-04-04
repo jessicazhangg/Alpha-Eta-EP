@@ -77,8 +77,9 @@ void loop() {
       // }
 
       // HvsC Mode
-      //displayTT();
-      //displayAH();
+      displayTT();
+      displayAH();
+      start_check();
       game_mode = HvsC;
       sequence = player_white;
       Serial.println("Done with Start!");
@@ -173,45 +174,45 @@ void black_player_movement() {
   // Give player time to move the piece
   //delay(5000);
 
-  // while(true) {
-  //   // player uses button to signify they moved black piece
-  //   if (button(END) == true) {
-  //     byte column = 6;
-  //     byte row = 0;
-  //     // scans reed sensors
-  //     for (byte i = 0; i < 4; i++) {
-  //       digitalWrite(MUX_SELECT[i], LOW);
-  //       for (byte j = 0; j < 16; j++) {
-  //         for (byte k = 0; k < 4; k++) {
-  //           digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
-  //           // might need to add delay(5 / 10) here according to online bc sensing too fast causes errors
-  //         }
-  //         reed_sensor_black[column][row] = digitalRead(MUX_OUTPUT);
-  //         row++;
-  //         if (j == 7) {
-  //           column++;
-  //           row = 0;
-  //         }
-  //       }
-  //       for (byte l = 0; l < 4; l++) {
-  //         digitalWrite(MUX_SELECT[l], HIGH);
-  //       }
-  //       if (i == 0) column = 4;
-  //       if (i == 1) column = 2;
-  //       if (i == 2) column = 0;
-  //       row = 0;
-  //     }
-  //     if (reed_sensor_black[departure_coord_Y][departure_coord_X - 1] == 1 && reed_sensor_black[arrival_coord_Y][arrival_coord_X - 1] == 0) {
-  //       Serial.println("CORRECT BLACK MOVE!");
-  //       break;
-  //     }
-  //     else {
-  //       led_invalid();
-  //       led_black_move(departure_coord_X, departure_coord_Y, arrival_coord_X, arrival_coord_Y);
-  //     }
-  //   }
-  // }
-  // led_valid();
+  while(true) {
+    // player uses button to signify they moved black piece
+    if (button(END) == true) {
+      byte column = 6;
+      byte row = 0;
+      // scans reed sensors
+      for (byte i = 0; i < 4; i++) {
+        digitalWrite(MUX_SELECT[i], LOW);
+        for (byte j = 0; j < 16; j++) {
+          for (byte k = 0; k < 4; k++) {
+            digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
+            // might need to add delay(5 / 10) here according to online bc sensing too fast causes errors
+          }
+          reed_sensor_black[column][row] = digitalRead(MUX_OUTPUT);
+          row++;
+          if (j == 7) {
+            column++;
+            row = 0;
+          }
+        }
+        for (byte l = 0; l < 4; l++) {
+          digitalWrite(MUX_SELECT[l], HIGH);
+        }
+        if (i == 0) column = 4;
+        if (i == 1) column = 2;
+        if (i == 2) column = 0;
+        row = 0;
+      }
+      if (reed_sensor_black[departure_coord_Y - 1][departure_coord_X - 1] == 1 && reed_sensor_black[arrival_coord_Y - 1][arrival_coord_X - 1] == 0) {
+        Serial.println("CORRECT BLACK MOVE!");
+        break;
+      }
+      else {
+        led_invalid();
+        led_black_move(departure_coord_X, departure_coord_Y, arrival_coord_X, arrival_coord_Y);
+      }
+    }
+  }
+  led_valid();
   
   //  Update the reed sensors states with the Black move
   reed_sensor_status_memory[convert_table[departure_coord_Y]][departure_coord_X - 1] = 1;
@@ -437,6 +438,54 @@ void led_black_move(int ax, int ay, int dx, int dy) {
   leds[departure_led] = gold;
   leds[departure_led + 1] = gold;
   FastLED.show();
+}
+
+void start_check() {
+  bool wrong = true;
+  while(wrong) {
+    wrong = false;
+    byte column = 6;
+    byte row = 0;
+
+    for (byte i = 0; i < 4; i++) {
+      digitalWrite(MUX_SELECT[i], LOW);
+      for (byte j = 0; j < 16; j++) {
+        for (byte k = 0; k < 4; k++) {
+          digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
+          delay(1);
+        }
+        reed_sensor_record[column][row] = digitalRead(MUX_OUTPUT);
+        row++;
+        if (j == 7) {
+          column++;
+          row = 0;
+        }
+      }
+      for (byte l = 0; l < 4; l++) {
+        digitalWrite(MUX_SELECT[l], HIGH);
+      }
+      if (i == 0) column = 4;
+      if (i == 1) column = 2;
+      if (i == 2) column = 0;
+      row = 0;
+    }
+    led_reset();
+    for(int i = 0; i < 8; i++) {
+      for(int j = 0; j < 2; j++) {
+        if (reed_sensor_record[j][i] == 1) {
+          leds[led_coord(j + 1, i + 1)] == red;
+          wrong = true;
+        } 
+        if (reed_sensor_record[7 - j][i] == 1) {
+          leds[led_coord(8 - j, i + 1)] == red;
+          wrong = true;
+        }
+      }
+    }
+    FastLED.show();
+    delay(1000);
+  }
+  led_reset();
 }
 
 void led_gameover(boolean win) {
