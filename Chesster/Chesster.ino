@@ -33,7 +33,7 @@ void setup() {
 
   
   FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(BRIGHTNESS);
+  //FastLED.setBrightness(BRIGHTNESS);
 
   //reset button
   digitalWrite(RESET_PIN, HIGH);
@@ -77,8 +77,8 @@ void loop() {
       // }
 
       // HvsC Mode
-      displayTT(8);
-      displayAH(8);
+      //displayTT();
+      //displayAH();
       game_mode = HvsC;
       sequence = player_white;
       Serial.println("Done with Start!");
@@ -87,7 +87,7 @@ void loop() {
     case player_white:
       detect_human_movement();
       if (button(END) == true) {  // White player end turn
-        led_reset();
+        //led_reset();
         player_displacement();
         // if (game_mode == HvsH) { // no HvH
         //   AI_HvsH();  // Check is movement is valid
@@ -104,8 +104,8 @@ void loop() {
         led_valid();
         //}
         Serial.println("Done with White!");
-        break;
       }
+      break;
 
       case player_black:
         //  Game mode HvsH
@@ -137,7 +137,7 @@ void loop() {
     led_gameover(white_win);
   }
   // resets arduino
-  if (button(END)) {
+  if (button(RESET) {
     digitalWrite(RESET_PIN, LOW);
   }
 }
@@ -173,44 +173,46 @@ void black_player_movement() {
   // Give player time to move the piece
   //delay(5000);
 
-  while(true) {
-    // player uses button to signify they moved black piece
-    if (button(END) == true) {
-      byte column = 6;
-      byte row = 0;
-      // scans reed sensors
-      for (byte i = 0; i < 4; i++) {
-        digitalWrite(MUX_SELECT[i], LOW);
-        for (byte j = 0; j < 16; j++) {
-          for (byte k = 0; k < 4; k++) {
-            digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
-            // might need to add delay(5 / 10) here according to online bc sensing too fast causes errors
-          }
-          reed_sensor_black[column][row] = digitalRead(MUX_OUTPUT);
-          row++;
-          if (j == 7) {
-            column++;
-            row = 0;
-          }
-        }
-        for (byte l = 0; l < 4; l++) {
-          digitalWrite(MUX_SELECT[l], HIGH);
-        }
-        if (i == 0) column = 4;
-        if (i == 1) column = 2;
-        if (i == 2) column = 0;
-        row = 0;
-      }
-      if (reed_sensor_black[departure_coord_Y][departure_coord_X - 1] == 1 && reed_sensor_black[arrival_coord_Y][arrival_coord_X - 1] == 0) {
-        break;
-      }
-      else {
-        led_invalid();
-        led_black_move(departure_coord_X, departure_coord_Y, arrival_coord_X, arrival_coord_Y);
-      }
-    }
-  }
-  led_valid();
+  // while(true) {
+  //   // player uses button to signify they moved black piece
+  //   if (button(END) == true) {
+  //     byte column = 6;
+  //     byte row = 0;
+  //     // scans reed sensors
+  //     for (byte i = 0; i < 4; i++) {
+  //       digitalWrite(MUX_SELECT[i], LOW);
+  //       for (byte j = 0; j < 16; j++) {
+  //         for (byte k = 0; k < 4; k++) {
+  //           digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
+  //           // might need to add delay(5 / 10) here according to online bc sensing too fast causes errors
+  //         }
+  //         reed_sensor_black[column][row] = digitalRead(MUX_OUTPUT);
+  //         row++;
+  //         if (j == 7) {
+  //           column++;
+  //           row = 0;
+  //         }
+  //       }
+  //       for (byte l = 0; l < 4; l++) {
+  //         digitalWrite(MUX_SELECT[l], HIGH);
+  //       }
+  //       if (i == 0) column = 4;
+  //       if (i == 1) column = 2;
+  //       if (i == 2) column = 0;
+  //       row = 0;
+  //     }
+  //     if (reed_sensor_black[departure_coord_Y][departure_coord_X - 1] == 1 && reed_sensor_black[arrival_coord_Y][arrival_coord_X - 1] == 0) {
+  //       Serial.println("CORRECT BLACK MOVE!");
+  //       break;
+  //     }
+  //     else {
+  //       led_invalid();
+  //       led_black_move(departure_coord_X, departure_coord_Y, arrival_coord_X, arrival_coord_Y);
+  //     }
+  //   }
+  // }
+  // led_valid();
+  
   //  Update the reed sensors states with the Black move
   reed_sensor_status_memory[convert_table[departure_coord_Y]][departure_coord_X - 1] = 1;
   reed_sensor_status_memory[convert_table[arrival_coord_Y]][arrival_coord_X - 1] = 0;
@@ -276,6 +278,8 @@ void detect_human_movement() {
       reed_sensor_status[i][j] = reed_sensor_status_memory[i][j];
     }
   }
+
+  reed_switch_display();
 }
 
 //**************************  PLAYER DISPLACEMENT
@@ -304,45 +308,41 @@ int led_coord(int x, int y) {
   if (x == 7) {return 14 - y * 2;}
 }
 
-void displayTT(int times) {
-    for (int i = 0; i < times; i++) {
-    leds[50] = red;
-    leds[51] = red;
-    leds[59] = red;
-    leds[60] = red;
-    leds[88] = red;
-    leds[89] = red;
-    leds[95] = red;
-    leds[96] = red;
-    leds[97] = red;
-    leds[98] = red;
-    leds[99] = red;
-    leds[100] = red;
+void displayTT() {
+    for (int i = 0; i < 2; i++) {
+      leds[50] = red;
+      leds[51] = red;
+      leds[59] = red;
+      leds[60] = red;
+      leds[88] = red;
+      leds[89] = red;
+      leds[95] = red;
+      leds[96] = red;
+      leds[97] = red;
+      leds[98] = red;
+      leds[99] = red;
+      leds[100] = red;
 
-    leds[40] = gold;
-    leds[41] = gold;
-    leds[69] = gold;
-    leds[70] = gold;
-    leds[78] = gold;
-    leds[79] = gold;
-    leds[105] = gold;
-    leds[106] = gold;
-    leds[107] = gold;
-    leds[108] = gold;
-    leds[109] = gold;
-    leds[110] = gold;
-    FastLED.show();
-    delay(i*50);
-    if (i == (times - 1)) {
+      leds[40] = gold;
+      leds[41] = gold;
+      leds[69] = gold;
+      leds[70] = gold;
+      leds[78] = gold;
+      leds[79] = gold;
+      leds[105] = gold;
+      leds[106] = gold;
+      leds[107] = gold;
+      leds[108] = gold;
+      leds[109] = gold;
+      leds[110] = gold;
+      FastLED.show();
+      delay(2000);
+      led_reset();
       delay(1000);
-    }
-    led_reset();
-    delay(i*30);
   }
 }
 
-void displayAH(int times) {
-    for (int i = 0; i < times; i++) {
+void displayAH() {
     leds[38] = red;
     leds[39] = red;
     leds[42] = red;
@@ -384,13 +384,8 @@ void displayAH(int times) {
     leds[100] = gold;
 
     FastLED.show();
-    delay(i*10);
-    if (i == (times - 1)) {
-      delay(1000);
-    }
+    delay(3000);
     led_reset();
-    delay(i*30);
-  }
 }
 
 void led_reset() {
@@ -456,4 +451,21 @@ void led_gameover(boolean win) {
     }
   }
   FastLED.show();
+}
+
+void reed_switch_display() {
+
+  Serial.println("  +-----------------+");
+  for (int i = 0; i < 8; i++) {
+    Serial.print(' ');
+    Serial.print(8 - i);
+    Serial.print("| ");
+    for (int j = 0; j < 8; j++) {
+      Serial.print(reed_sensor_status_memory[i][j]);
+      Serial.print(" ");
+    }
+    Serial.println('|');
+  }
+  Serial.println("  +-----------------+");
+  Serial.println("   a b c d e f g h");
 }

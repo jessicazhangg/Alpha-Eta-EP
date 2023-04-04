@@ -53,7 +53,7 @@ const byte MUX_CHANNEL[16][4] = {
 };
 
 //  Button - Switch
-const byte BUTTON_END_TURN (11);
+const byte BUTTON_END_TURN (4);
 const byte BUTTON_RESET (10);
 enum {END, RESET};
 
