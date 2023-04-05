@@ -21,7 +21,6 @@
 #define green       CRGB (0, 130, 0);
 #define white       CRGB (255, 255, 255);
 
-
 //reset
 #define RESET_PIN 52
 
@@ -33,7 +32,7 @@ void setup() {
 
   
   FastLED.addLeds<LED_TYPE, LED_PIN, GRB>(leds, NUM_LEDS);
-  //FastLED.setBrightness(BRIGHTNESS);
+  FastLED.setBrightness(BRIGHTNESS);
 
   //reset button
   digitalWrite(RESET_PIN, HIGH);
@@ -77,8 +76,8 @@ void loop() {
       // }
 
       // HvsC Mode
-      displayTT();
-      displayAH();
+      //displayTT();
+      //displayAH();
       start_check();
       game_mode = HvsC;
       sequence = player_white;
@@ -137,10 +136,7 @@ void loop() {
   if (game_over == true) {
     led_gameover(white_win);
   }
-  // resets arduino
-  if (button(RESET) {
-    digitalWrite(RESET_PIN, LOW);
-  }
+  
 }
 
 //***************************************  SWITCH
@@ -258,7 +254,7 @@ void detect_human_movement() {
   }
 
   //  Compare the old and new status of the reed switches
-
+  led_reset();
   for (byte i = 0; i < 8; i++) {
     for (byte j = 0; j < 8; j++) {
       if (reed_sensor_status[i][j] != reed_sensor_status_memory[i][j]) {
@@ -269,6 +265,9 @@ void detect_human_movement() {
         if (reed_sensor_status_memory[i][j] == 0) {
           reed_colone[1] = i;
           reed_line[1] = j;
+          leds[led_coord(j + 1, 8 - j)] = red;
+          leds[led_coord(j + 1, 8 - j) + 1] = red;
+          FastLED.show();
         }
       }
     }
@@ -385,7 +384,7 @@ void displayAH() {
     leds[100] = gold;
 
     FastLED.show();
-    delay(3000);
+    delay(1500);
     led_reset();
 }
 
@@ -469,21 +468,31 @@ void start_check() {
       if (i == 2) column = 0;
       row = 0;
     }
-    led_reset();
+
     for(int i = 0; i < 8; i++) {
-      for(int j = 0; j < 2; j++) {
-        if (reed_sensor_record[j][i] == 1) {
-          leds[led_coord(j + 1, i + 1)] == red;
+      for (int j = 0; j < 8; j++) {
+        Serial.print(reed_sensor_record[i][j]);
+      }
+      Serial.println("");
+    }
+    Serial.println("");
+    led_reset();
+    for(int i = 0; i < 2; i++) {
+      for(int j = 0; j < 8; j++) {
+        if (reed_sensor_record[i][j] == 1) {
+          leds[led_coord(8 - i, j + 1)] = red;
+          leds[led_coord(8 - i, j + 1) + 1] = red;
           wrong = true;
         } 
-        if (reed_sensor_record[7 - j][i] == 1) {
-          leds[led_coord(8 - j, i + 1)] == red;
+        if (reed_sensor_record[7 - i][j] == 1) {
+          leds[led_coord(i + 1, j + 1)] = red;
+          leds[led_coord(i + 1, j + 1) + 1] = red;
           wrong = true;
         }
       }
     }
     FastLED.show();
-    delay(1000);
+    delay(500);
   }
   led_reset();
 }
@@ -510,7 +519,7 @@ void reed_switch_display() {
     Serial.print(8 - i);
     Serial.print("| ");
     for (int j = 0; j < 8; j++) {
-      Serial.print(reed_sensor_status_memory[i][j]);
+      Serial.print(reed_sensor_record[i][j]);
       Serial.print(" ");
     }
     Serial.println('|');
