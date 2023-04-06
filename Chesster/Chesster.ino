@@ -20,6 +20,7 @@
 #define black       CRGB (0, 0, 0)
 #define green       CRGB (0, 130, 0);
 #define white       CRGB (255, 255, 255);
+#define blue        CRGB(0, 0, 255);
 
 //reset
 #define RESET_PIN 52
@@ -76,8 +77,8 @@ void loop() {
       // }
 
       // HvsC Mode
-      //displayTT();
-      //displayAH();
+      // displayTT();
+      // displayAH();
       start_check();
       game_mode = HvsC;
       sequence = player_white;
@@ -265,8 +266,8 @@ void detect_human_movement() {
         if (reed_sensor_status_memory[i][j] == 0) {
           reed_colone[1] = i;
           reed_line[1] = j;
-          leds[led_coord(j + 1, 8 - j)] = red;
-          leds[led_coord(j + 1, 8 - j) + 1] = red;
+          leds[led_coord(i + 1, 8 - j)] = red;
+          leds[led_coord(i + 1, 8 - j) + 1] = red;
           FastLED.show();
         }
       }
@@ -382,7 +383,6 @@ void displayAH() {
     leds[98] = gold;
     leds[99] = gold;
     leds[100] = gold;
-
     FastLED.show();
     delay(1500);
     led_reset();
@@ -396,15 +396,8 @@ void led_reset() {
 }
 
 void led_invalid() {
-  for (int i = 0; i < 3; i++) {
-    leds[0] = red;
-    leds[1] = red;
-    leds[14] = red;
-    leds[15] = red;
-    leds[133] = red;
-    leds[134] = red;
-    leds[147] = red;
-    leds[148] = red;
+  for (int i = 0; i < 150; i++) {
+    leds[i] = 150;
     FastLED.show();
     delay(500);
     led_reset();
@@ -413,15 +406,8 @@ void led_invalid() {
 }
 
 void led_valid() {
-  for (int i = 0; i < 3; i++) {
-    leds[0] = green;
-    leds[1] = green;
-    leds[14] = green;
-    leds[15] = green;
-    leds[133] = green;
-    leds[134] = green;
-    leds[147] = green;
-    leds[148] = green;
+  for (int i = 0; i < 150; i++) {
+    leds[i] = green;
     FastLED.show();
     delay(500);
     led_reset();
@@ -432,10 +418,10 @@ void led_valid() {
 void led_black_move(int ax, int ay, int dx, int dy) {
   int arrival_led = led_coord(ay, ax);
   int departure_led = led_coord(dy, dx);
-  leds[arrival_led] = red;
-  leds[arrival_led + 1] = red;
-  leds[departure_led] = gold;
-  leds[departure_led + 1] = gold;
+  leds[arrival_led] = blue;
+  leds[arrival_led + 1] = blue;
+  leds[departure_led] = blue;
+  leds[departure_led + 1] = blue; 
   FastLED.show();
 }
 
@@ -451,7 +437,7 @@ void start_check() {
       for (byte j = 0; j < 16; j++) {
         for (byte k = 0; k < 4; k++) {
           digitalWrite(MUX_ADDR [k], MUX_CHANNEL [j][k]);
-          delay(1);
+          delay(3);
         }
         reed_sensor_record[column][row] = digitalRead(MUX_OUTPUT);
         row++;
@@ -512,7 +498,6 @@ void led_gameover(boolean win) {
 }
 
 void reed_switch_display() {
-
   Serial.println("  +-----------------+");
   for (int i = 0; i < 8; i++) {
     Serial.print(' ');
