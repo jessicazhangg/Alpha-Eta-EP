@@ -97,8 +97,10 @@ void loop() {
         // }
         //else if (game_mode == HvsC) {
         AI_HvsC();
+        
         if (no_valid_move == true) { 
           led_invalid();
+          no_valid_move = false;
           break;
         }
         sequence = player_black;
@@ -248,6 +250,11 @@ void detect_human_movement() {
     row = 0;
   }
 
+
+  reed_sensor_record[6][2] = 0;
+  reed_sensor_record[1][2] = 0;
+
+
   for (byte i = 0; i < 8; i++) {
     for (byte j = 0; j < 8; j++) {
       reed_sensor_status_memory[7 - i][j] = reed_sensor_record[i][j];
@@ -273,14 +280,13 @@ void detect_human_movement() {
       }
     }
   }
-  delay(500);
   //  Set the new status of the reed sensors
   for (byte i = 0; i < 8; i++) {
     for (byte j = 0; j < 8; j++) {
       reed_sensor_status[i][j] = reed_sensor_status_memory[i][j];
     }
   }
-
+  delay(300);
   //reed_switch_display();
 }
 
@@ -419,8 +425,8 @@ void led_valid() {
 }
 
 void led_black_move(int ax, int ay, int dx, int dy) {
-  int arrival_led = led_coord(8 - ay, ax);
-  int departure_led = led_coord(8 - dy, dx);
+  int arrival_led = led_coord(9 - ay, ax);
+  int departure_led = led_coord(9 - dy, dx);
   leds[arrival_led] = blue;
   leds[arrival_led + 1] = blue;
   leds[departure_led] = blue;
@@ -457,6 +463,13 @@ void start_check() {
       if (i == 2) column = 0;
       row = 0;
     }
+
+
+
+    reed_sensor_record[6][2] = 0;
+  reed_sensor_record[1][2] = 0;
+
+
 
     for(int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
