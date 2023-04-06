@@ -123,7 +123,7 @@ void loop() {
           //   if (no_valid_move == false) sequence = player_white;
           //   //else lcd_display();
           // }
-        //}
+        //} 
         //  Game mode HvsC
         //else if (game_mode == HvsC) {
         black_player_movement();  //  Move the black chess piece
@@ -266,13 +266,14 @@ void detect_human_movement() {
         if (reed_sensor_status_memory[i][j] == 0) {
           reed_colone[1] = i;
           reed_line[1] = j;
-          leds[led_coord(i + 1, 8 - j)] = red;
-          leds[led_coord(i + 1, 8 - j) + 1] = red;
+          leds[led_coord(i + 1, j + 1)] = red;
+          leds[led_coord(i + 1, j + 1)+ 1] = red;
           FastLED.show();
         }
       }
     }
   }
+  delay(500);
   //  Set the new status of the reed sensors
   for (byte i = 0; i < 8; i++) {
     for (byte j = 0; j < 8; j++) {
@@ -280,7 +281,7 @@ void detect_human_movement() {
     }
   }
 
-  reed_switch_display();
+  //reed_switch_display();
 }
 
 //**************************  PLAYER DISPLACEMENT
@@ -396,28 +397,30 @@ void led_reset() {
 }
 
 void led_invalid() {
-  for (int i = 0; i < 150; i++) {
-    leds[i] = 150;
+  for (int i = 0; i < 3; i++ ){
+    for (int i = 0; i < 150; i++) {
+      leds[i] = red;
+    }
     FastLED.show();
-    delay(500);
+    delay(300);
     led_reset();
-    delay(500);
   }
 }
 
 void led_valid() {
-  for (int i = 0; i < 150; i++) {
-    leds[i] = green;
+  for (int i = 0; i < 3; i++ ){
+    for (int i = 0; i < 150; i++) {
+      leds[i] = green;
+    }
     FastLED.show();
-    delay(500);
+    delay(300);
     led_reset();
-    delay(500);
   }
 }
 
 void led_black_move(int ax, int ay, int dx, int dy) {
-  int arrival_led = led_coord(ay, ax);
-  int departure_led = led_coord(dy, dx);
+  int arrival_led = led_coord(8 - ay, ax);
+  int departure_led = led_coord(8 - dy, dx);
   leds[arrival_led] = blue;
   leds[arrival_led + 1] = blue;
   leds[departure_led] = blue;
